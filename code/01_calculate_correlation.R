@@ -66,7 +66,7 @@ res <- foreach(i = seq_len(n_genes),
 t1 = Sys.time()
 difftime(t1, t0, unit="secs")
 
-res[1:10,1:10]
+print(res[1:10])
 
 
 
