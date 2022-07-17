@@ -1,6 +1,6 @@
 #!/bin/bash
 #$ -cwd
-#$ -l bluejay,mem_free=40G,h_vmem=40G,h_fsize=100G
+#$ -l bluejay,mem_free=10G,h_vmem=10G,h_fsize=100G
 #$ -pe local 8
 #$ -N calculate_correlation
 #$ -o logs/calculate_correlation.txt
