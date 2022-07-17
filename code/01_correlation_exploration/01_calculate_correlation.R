@@ -20,8 +20,39 @@ library(sessionInfo)
 numCores <- makeCluster(detectCores(), type='PSOCK') # grabs max available
 
 options('mc.cores' = numCores)
-registerDoParallel(numCores)
+registerDoParallel(numCores) #specifies that you want 8
+#workers working every time you do a foreach loop
 
+#EXAMPLE
+#res <- foreach(i = 1:5 ) %dopar% {
+   # i*i
+#}
+
+# i specifies the sequence of your iteration
+# %dopar% means run in parallel
+# assign everything to res
+
+#test time
+
+system.time(
+    res <- foreach(i = 1:100000) %dopar%
+        {
+            i*i
+
+        }
+)
+
+#for dopar
+# user  system elapsed
+# 20.316   2.427  24.209
+
+#for do
+# user  system elapsed
+# 0.101   0.002   0.105
+
+##got warning using the do instead of dopar
+
+# total user time was 0.005 seconds
 
 n_genes = 27853
 # snowFORK <- SnowParam(workers = numCores, type = "FORK")
@@ -35,24 +66,17 @@ spe_postqc <-
     )
 
 pAbeta <- as.matrix(colData(spe_postqc)$PAbeta)
-corr_for_counts <- function(x){
-    res <- cor(
-        x,
-        pAbeta, method = "spearman")
-    res
 
-    }
-
-t0 = Sys.time()
 #beta = pvec(1:10, corr_for_counts, spe = spe_postqc, mc.cores = numCores)
 #
 # beta = apply(X = as.matrix(counts(spe_postqc)[1:2000,]),
 #             MARGIN = 1,
 #             FUN = corr_for_counts)
 
-spe_counts <- counts(spe_postqc)
 
-res <- foreach(i = seq_len(n_genes),
+spe_counts <- counts(spe_postqc)
+t0 = Sys.time()
+res <- foreach(i = 1:27853,
                .combine = rbind,
                .multicombine = TRUE,
                .inorder = FALSE,
@@ -60,15 +84,28 @@ res <- foreach(i = seq_len(n_genes),
                    cor(as.matrix(spe_counts[i,]), pAbeta, method = 'pearson')
                }
 
+t1 = Sys.time()
+##
+
 
 # > beta = pvec(1:n_genes, corr_for_counts, spe = spe_postqc, mc.cores = numCores)
 
-t1 = Sys.time()
+
 difftime(t1, t0, unit="secs")
+# Time difference of 3314.799 secs
 
 print(res[1:10])
 
+pAbeta_res <- cbind(rowData(spe_postqc)$gene_id,
+                    res)
+saveRDS(pAbeta_res,
+        here("corr_outputs",
+             "pearson",
+             "pearson_pAbeta.RDS"))
 
 
-# corrs <-apply(as.matrix(counts(spe_S1_A1_Br3874)[i])
-#       , 1, function(x) cor(x, as.numeric(as.matrix(colData(spe_S1_A1_Br3874)$NAbeta))))
+
+
+
+
+
