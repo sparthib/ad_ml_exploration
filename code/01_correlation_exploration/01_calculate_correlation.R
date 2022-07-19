@@ -11,7 +11,6 @@
 library(SpatialExperiment)
 library(rtracklayer)
 library(GenomicRanges)
-library(BiocParallel)
 library(doParallel)
 library(here)
 library(sessioninfo)
@@ -68,24 +67,15 @@ spe_postqc <-
     )
 
 spe_postqc <- scuttle::logNormCounts(spe_postqc)
-
+spe_counts <- logcounts(spe_postqc)
 
 PAbeta <- as.matrix(colData(spe_postqc)$PAbeta)
 PpTau <- as.matrix(colData(spe_postqc)$PpTau)
 
 
+#### Pearson ####
 
-#beta = pvec(1:10, corr_for_counts, spe = spe_postqc, mc.cores = numCores)
-#
-# beta = apply(X = as.matrix(counts(spe_postqc)[1:2000,]),
-#             MARGIN = 1,
-#             FUN = corr_for_counts)
-
-
-spe_counts <- logcounts(spe_postqc)
-rm(spe_postqc)
-
-
+#pTau
 t0 = Sys.time()
 res <- foreach(i = 1:27853,
                .combine = rbind,
@@ -96,24 +86,87 @@ res <- foreach(i = 1:27853,
                }
 
 t1 = Sys.time()
-##
-
-
-# > beta = pvec(1:n_genes, corr_for_counts, spe = spe_postqc, mc.cores = numCores)
-
 
 difftime(t1, t0, unit="secs")
-# Time difference of 3314.799 secs
-
-print(res[1:10])
+# Time difference of 1223.088 secs
 
 PpTau_res <- cbind(rowData(spe_postqc)$gene_id,
-                    res)
+                   res)
 saveRDS(PpTau_res,
         here("corr_outputs",
              "pearson",
              "pearson_PpTau.RDS"))
 
+#Abeta
+t2 = Sys.time()
+res <- foreach(i = 1:27853,
+               .combine = rbind,
+               .multicombine = TRUE,
+               .inorder = FALSE,
+               .packages = c('data.table', 'doParallel')) %dopar% {
+                   cor(as.matrix(spe_counts[i,]), PAbeta, method = 'pearson')
+               }
+
+t3=Sys.time()
+difftime(t3, t2, unit="secs")
+#Time difference of 774.08 secs
+
+
+PAbeta_res <- cbind(rowData(spe_postqc)$gene_id,
+                   res)
+saveRDS(PAbeta_res,
+        here("corr_outputs",
+             "pearson",
+             "pearson_PAbeta.RDS"))
+
+#### Spearman ####
+
+
+t0 = Sys.time()
+res <- foreach(i = 1:27853,
+               .combine = rbind,
+               .multicombine = TRUE,
+               .inorder = FALSE,
+               .packages = c('data.table', 'doParallel')) %dopar% {
+                   cor(as.matrix(spe_counts[i,]), PpTau, method = 'spearman')
+               }
+
+t1 = Sys.time()
+
+difftime(t1, t0, unit="secs")
+# Time difference of 956.0796 secs
+
+
+PpTau_res <- cbind(rowData(spe_postqc)$gene_id,
+                   res)
+saveRDS(PpTau_res,
+        here("corr_outputs",
+             "spearman",
+             "PpTau.RDS"))
+
+
+
+t2 = Sys.time()
+res <- foreach(i = 1:27853,
+               .combine = rbind,
+               .multicombine = TRUE,
+               .inorder = FALSE,
+               .packages = c('data.table', 'doParallel')) %dopar% {
+                   cor(as.matrix(spe_counts[i,]), PAbeta, method = 'spearman')
+               }
+
+t3=Sys.time()
+difftime(t3, t2, unit="secs")
+# Time difference of 939.8254 secs
+
+
+
+PAbeta_res <- cbind(rowData(spe_postqc)$gene_id,
+                    res)
+saveRDS(PAbeta_res,
+        here("corr_outputs",
+             "spearman",
+             "PAbeta.RDS"))
 
 
 
