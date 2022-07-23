@@ -1,10 +1,10 @@
-library(sgejobs)
-sgejobs::job_single('hvgs',
-                    create_shell = TRUE,
-                    create_logdir = FALSE, task_num = 10,
-                    queue = "bluejay",
-                    command = "Rscript hvgs.R",
-                    memory = "20G")
+# library(sgejobs)
+# sgejobs::job_single('hvgs',
+#                     create_shell = TRUE,
+#                     create_logdir = FALSE, task_num = 10,
+#                     queue = "bluejay",
+#                     command = "Rscript hvgs.R",
+#                     memory = "20G")
 
 
 
