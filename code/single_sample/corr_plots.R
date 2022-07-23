@@ -32,7 +32,16 @@ sample_ids <- c(
 )
 
 
+spe_postqc <-
+    readRDS(here::here("input_data",
+                       paste0("spe_wholegenome_postqc.rds")))
+
+spe_postqc <- scuttle::logNormCounts(spe_postqc)
+spe_counts <- logcounts(spe_postqc)
+
+
 s = as.numeric(Sys.getenv("SGE_TASK_ID"))
+s=1
 print(s)
 ix <- colData(spe_postqc)$sample_id_short == sample_ids[s]
 spe_sub <- spe_postqc[, ix]
@@ -41,13 +50,24 @@ spe_sub <- spe_postqc[, ix]
 #load corr values
 output_dir <- here("corr_outputs",
                    sample_ids[s])
-names(res) <- names
 
 res <- readRDS(paste0(output_dir, "/sorted_corrs.RDS"))
 
+names <- c ("PAbeta_pearson",
+            "PpTau_pearson",
+            "NAbeta_pearson",
+            "NpTau_pearson",
+            "PAbeta_spearman",
+            "PpTau_spearman",
+            "NAbeta_spearman",
+            "NpTau_spearman")
+
+names(res) <- names
+
 dir.create(here("plots","02_sample_subset", sample_ids[s]))
 
-plot_output_dir <-
+y_labs <- c("PAbeta", "PpTau", "NAbeta", "NpTau",
+            "PAbeta", "PpTau", "NAbeta", "NpTau")
 
 for(i in seq_len(8)){
     n = nrow(res[[i]])
