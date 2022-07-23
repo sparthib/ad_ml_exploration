@@ -40,8 +40,12 @@ spe_postqc <-
                        paste0("spe_wholegenome_postqc.rds")))
 print("spe object loaded")
 
+
 spe_postqc <- scuttle::logNormCounts(spe_postqc)
+print("logcounts calculated ")
+
 spe_counts <- logcounts(spe_postqc)
+print("logcounts subsetted")
 
 print("log counts for spe calculated")
 
