@@ -1,10 +1,11 @@
 library(sgejobs)
-sgejobs::job_single('all_samples',
-                    create_shell = TRUE,
-                    create_logdir = TRUE, task_num = 10,
-                    queue = "bluejay",
-                    cores = 4L,
-                    memory = "20G")
+# sgejobs::job_single('all_samples',
+#                     create_shell = TRUE,
+#                     create_logdir = TRUE, task_num = 10,
+#                     queue = "bluejay",
+#                     cores = 4L,
+#                     command = "Rscript all_samples.R",
+#                     memory = "20G")
 
 library(SpatialExperiment)
 library(rtracklayer)
