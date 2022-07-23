@@ -12,9 +12,9 @@
 library(SpatialExperiment)
 library(doParallel)
 library(here)
-library(sessioninfo)
 library(dplyr)
 library(scuttle)
+library(sessioninfo)
 
 here()
 
