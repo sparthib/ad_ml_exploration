@@ -1,3 +1,11 @@
+library(sgejobs)
+sgejobs::job_single('all_samples',
+                    create_shell = TRUE,
+                    create_logdir = TRUE, task_num = 10,
+                    queue = "bluejay",
+                    cores = 4L,
+                    memory = "20G")
+
 library(SpatialExperiment)
 library(rtracklayer)
 library(GenomicRanges)
@@ -17,7 +25,6 @@ options('mc.cores' = numCores)
 registerDoParallel(numCores)
 
 #### load data ####
-
 
 spe_postqc <-
     readRDS(here::here("input_data",
@@ -46,8 +53,8 @@ sample_ids <- c(
 #                     i))
 # }
 
-s = 1
-ix <- colData(spe_postqc)$sample_id_short == sample_ids[1]
+s = as.numeric(Sys.getenv("SGE_TASK_ID"))
+ix <- colData(spe_postqc)$sample_id_short == sample_ids[s]
 spe_sub <- spe_postqc[, ix]
 
 PAbeta <- as.matrix(colData(spe_sub)$PAbeta)
@@ -233,24 +240,28 @@ x <- list(
     NpTau_spearman_res
 )
 
-names <- c ("PAbeta_pearson_res",
-            "PpTau_pearson_res",
-            "NAbeta_pearson_res",
-            "NpTau_pearson_res",
-            "PAbeta_spearman_res",
-            "PpTau_spearman_res",
-            "NAbeta_spearman_res",
-            "NpTau_spearman_res")
+names <- c ("PAbeta_pearson",
+            "PpTau_pearson",
+            "NAbeta_pearson",
+            "NpTau_pearson",
+            "PAbeta_spearman",
+            "PpTau_spearman",
+            "NAbeta_spearman",
+            "NpTau_spearman")
 
 y_labs <- c("PAbeta", "PpTau", "NAbeta", "NpTau",
             "PAbeta", "PpTau", "NAbeta", "NpTau")
 res <- lapply(x, clean_table)
 
+dir.create(here("corr_outputs",
+                sample_ids[s]))
+output_dir <- here("corr_outputs",
+                   sample_ids[s])
+names(res) <- names
+saveRDS(res, paste0(output_dir, "/sorted_corrs.RDS"))
+
 
 ### Get logcounts for top 100 genes.
-rm(spe_postqc)
-
-
 for(i in seq_len(8)){
     n = nrow(res[[i]])
     gene_ids <- res[[i]]$gene_id[c(1:100, (n-99):n)] #get top and bottom 100 genes
