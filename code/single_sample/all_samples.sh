@@ -26,8 +26,7 @@ module load conda_R
 module list
 
 ## Edit with your job command
-#Rscript -e "options(width = 120); sessioninfo::session_info()"
-Rscript all_samples.R --input ${SGE_TASK_ID}
+Rscript -e "options(width = 120); sessioninfo::session_info()"
 echo "**** Job ends ****"
 date
 
