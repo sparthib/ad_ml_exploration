@@ -1,4 +1,4 @@
-library(sgejobs)
+#library(sgejobs)
 # sgejobs::job_single('all_samples',
 #                     create_shell = TRUE,
 #                     create_logdir = TRUE, task_num = 10,
@@ -7,6 +7,9 @@ library(sgejobs)
 #                     command = "Rscript all_samples.R",
 #                     memory = "20G")
 
+
+
+##This script computes all combos of correlation values for each of the 10 samples.
 library(SpatialExperiment)
 library(rtracklayer)
 library(GenomicRanges)
