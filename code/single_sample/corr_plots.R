@@ -73,7 +73,7 @@ names <- c ("PAbeta_pearson",
 
 names(res) <- names
 
-dir.create(here("plots","02_sample_subset", sample_ids[s]))
+dir.create(here("plots","02_sample_subset", sample_ids[s]), recursive = TRUE)
 
 y_labs <- c("PAbeta", "PpTau", "NAbeta", "NpTau",
             "PAbeta", "PpTau", "NAbeta", "NpTau")
