@@ -7,7 +7,7 @@
 #$ -e logs/corr_plots.$TASK_ID.txt
 #$ -m e
 #$ -t 1-10
-#$ -tc 20
+#$ -tc 10
 
 echo "**** Job starts ****"
 date
