@@ -16,8 +16,22 @@ library(sessioninfo)
 library(dplyr)
 library(scuttle)
 
-####sample id names ####
 
+
+#### load spe object and calc log counts ####
+spe_postqc <-
+    readRDS(here::here("input_data",
+                       paste0("spe_wholegenome_postqc.rds")))
+
+print(class(spe_postqc))
+
+spe_postqc <- scuttle::logNormCounts(spe_postqc)
+print("logcounts calculated ")
+
+spe_counts <- logcounts(spe_postqc)
+print("logcounts subsetted")
+
+####sample id names ####
 sample_ids <- c(
     "S1_A1_Br3874" ,
     "S1_B1_Br3854",
@@ -32,19 +46,6 @@ sample_ids <- c(
 )
 print("sample id names listed")
 
-#### load spe object and calc log counts ####
-spe_postqc <-
-    readRDS(here::here("input_data",
-                       paste0("spe_wholegenome_postqc.rds")))
-print(class(spe_postqc))
-
-spe_postqc <- logNormCounts(spe_postqc)
-print("logcounts calculated ")
-
-spe_counts <- logcounts(spe_postqc)
-print("logcounts subsetted")
-
-print("log counts for spe calculated")
 
 #### get task id and subset spe ####
 s = as.numeric(Sys.getenv("SGE_TASK_ID"))
