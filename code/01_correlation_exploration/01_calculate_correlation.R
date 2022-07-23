@@ -14,9 +14,10 @@ library(GenomicRanges)
 library(doParallel)
 library(here)
 library(sessioninfo)
+library(parallel)
 #BiocManager::install("gpuMagic")
 
-#numCores <- makeCluster(detectCores(), type='PSOCK') # grabs max available
+numCores <- makeCluster(detectCores(), type='PSOCK') # grabs max available
 #switch to 4 for now
 numCores <- 4
 
