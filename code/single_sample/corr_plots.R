@@ -10,8 +10,6 @@
 
 
 library(SpatialExperiment)
-library(rtracklayer)
-library(GenomicRanges)
 library(doParallel)
 library(here)
 library(sessioninfo)
@@ -38,10 +36,9 @@ print("sample id names listed")
 spe_postqc <-
     readRDS(here::here("input_data",
                        paste0("spe_wholegenome_postqc.rds")))
-print("spe object loaded")
+print(class(spe_postqc))
 
-
-spe_postqc <- scuttle::logNormCounts(spe_postqc)
+spe_postqc <- logNormCounts(spe_postqc)
 print("logcounts calculated ")
 
 spe_counts <- logcounts(spe_postqc)
