@@ -17,6 +17,7 @@ library(here)
 library(sessioninfo)
 library(dplyr)
 
+####sample id names ####
 
 sample_ids <- c(
     "S1_A1_Br3874" ,
@@ -30,20 +31,26 @@ sample_ids <- c(
     "S3_A1_Br3874" ,
     "S3_D1_Br3880"
 )
+print("sample id names listed")
 
-
+#### load spe object and calc log counts ####
 spe_postqc <-
     readRDS(here::here("input_data",
                        paste0("spe_wholegenome_postqc.rds")))
+print("spe object loaded")
 
 spe_postqc <- scuttle::logNormCounts(spe_postqc)
 spe_counts <- logcounts(spe_postqc)
 
+print("log counts for spe calculated")
 
+#### get task id and subset spe ####
 s = as.numeric(Sys.getenv("SGE_TASK_ID"))
 print(s)
 ix <- colData(spe_postqc)$sample_id_short == sample_ids[s]
 spe_sub <- spe_postqc[, ix]
+
+print(sample_ids[s])
 
 
 #load corr values
