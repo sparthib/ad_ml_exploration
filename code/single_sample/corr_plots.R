@@ -16,12 +16,12 @@ library(sessioninfo)
 library(dplyr)
 library(scuttle)
 
-
+here()
 
 #### load spe object and calc log counts ####
 spe_postqc <-
     readRDS(here::here("input_data",
-                       paste0("spe_wholegenome_postqc.rds")))
+                       "spe_wholegenome_postqc.rds"))
 
 print(class(spe_postqc))
 
