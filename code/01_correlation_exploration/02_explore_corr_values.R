@@ -143,7 +143,6 @@ dev.off()
 
 ##### List top 100 expressed and depleted genes
 
-top_100 expressed and depleted genes.
 
 
 
