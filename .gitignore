@@ -1,6 +1,7 @@
-.Rproj.user
-.Rhistory
-.RData
-.RDS
-.Ruserdata
-.rds
+*.Rproj.user
+*.Rhistory
+*.RData
+*.RDS
+*.Ruserdata
+*.rds
+*.pdf
