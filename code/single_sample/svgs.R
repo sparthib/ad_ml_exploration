@@ -76,5 +76,5 @@ res_list <- rowData(spe_sub)
 
 # save nnSVG results
 output_dir <- here('corr_outputs',
-                   'sample_ids[s]')
+                   sample_ids[s])
 saveRDS(res_list, paste0(output_dir, "/top_svgs.RDS"))
