@@ -1,12 +1,12 @@
-library(sgejobs)
-sgejobs::job_single('svgs',
-                    create_shell = TRUE,
-                    create_logdir = FALSE, task_num = 10,
-                    cores = 5L,
-                    queue = "bluejay",
-                    command = "Rscript svgs.R",
-                    memory = "20G")
-
+# library(sgejobs)
+# sgejobs::job_single('svgs',
+#                     create_shell = TRUE,
+#                     create_logdir = FALSE, task_num = 10,
+#                     cores = 5L,
+#                     queue = "bluejay",
+#                     command = "Rscript svgs.R",
+#                     memory = "20G")
+#
 
 
 library(SpatialExperiment)
