@@ -64,7 +64,7 @@ top_hvgs <- getTopHVGs(dec, prop = 0.1)
 length(top_hvgs)
 
 output_dir <- here('corr_outputs',
-                   'sample_ids[s]')
+                   sample_ids[s])
 saveRDS(top_hvgs, paste0(output_dir, "/top_hvgs.RDS"))
 
 
