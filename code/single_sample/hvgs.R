@@ -13,10 +13,9 @@ library(doParallel)
 library(here)
 library(dplyr)
 library(scuttle)
+library(scran)
 library(sessioninfo)
 library(nnSVG)
-library(BiocParallel)
-library(doParallel)
 here()
 
 #### load spe object and calc log counts ####
@@ -53,7 +52,7 @@ spe_sub <- spe_postqc[, ix]
 print(sample_ids[s])
 
 # fit mean-variance relationship
-dec <- modelGeneVar(spe_sub)
+dec <- scran::modelGeneVar(spe_sub)
 
 # visualize mean-variance relationship
 # fit <- metadata(dec)
