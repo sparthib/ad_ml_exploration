@@ -91,7 +91,8 @@ res_list <- list()
 
 fun <- function(i) {
     mat1 <- as.matrix(logcounts(spe_sub))[i,][as.matrix(logcounts(spe_sub))[i,] != 0]
-    res_list[[i]] <- merge(mat1,mat2, by = 0)
+    merge(mat1,mat2, by = 0)
+
 
 }
 
