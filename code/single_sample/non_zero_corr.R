@@ -1,12 +1,12 @@
 #library(sgejobs)
-sgejobs::job_single('non_zero_corr',
-                    create_shell = TRUE,
-                    create_logdir = TRUE, task_num = 10,
-                    queue = "bluejay",
-                    cores = 5L,
-                    command = "Rscript non_zero_corr.R",
-                    memory = "20G")
-
+# sgejobs::job_single('non_zero_corr',
+#                     create_shell = TRUE,
+#                     create_logdir = TRUE, task_num = 10,
+#                     queue = "bluejay",
+#                     cores = 5L,
+#                     command = "Rscript non_zero_corr.R",
+#                     memory = "20G")
+#
 
 
 
