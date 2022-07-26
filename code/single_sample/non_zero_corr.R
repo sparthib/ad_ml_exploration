@@ -25,10 +25,10 @@ library(dplyr)
 
 #numCores <- makeCluster(detectCores(), type='PSOCK') # grabs max available
 #switch to 4 for now
-numCores <- 4
-
-options('mc.cores' = numCores)
-registerDoParallel(numCores)
+# numCores <- 4
+#
+# options('mc.cores' = numCores)
+# registerDoParallel(numCores)
 
 #### load data ####
 
