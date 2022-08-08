@@ -212,8 +212,8 @@ non_zero_groups <- non_zero_pabeta_df  |>
 # arrange(dep_delay, .by_group = TRUE)
 
 
-###### make spot plots ####
-print("make spotplots")
+###### make corr plots ####
+print("make corrplots")
 output_dir <- here("plots","02_sample_subset", sample_ids[s])
 pdf(file = paste0(output_dir, "/", "filtered_non_zero_scatter_spearman_PAbeta.pdf"))
 for( i in seq_len(nrow(non_zero_groups))){

@@ -225,8 +225,8 @@ non_zero_groups <- non_zero_PpTau_df  |>
     group_by(bin)  |> top_n(n = 50, nrows) |> arrange(by = abs_corr, desc = TRUE)
 # arrange(dep_delay, .by_group = TRUE)
 
-###### make spot plots ####
-print("make spotplots")
+###### make corr plots ####
+print("make corrplots")
 
 output_dir <- here("plots","02_sample_subset", sample_ids[s])
 pdf(file = paste0(output_dir, "/", "filtered_non_zero_scatter_spearman_PpTau.pdf"))
