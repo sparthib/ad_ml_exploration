@@ -2,9 +2,9 @@
 #$ -cwd
 #$ -l bluejay,mem_free=20G,h_vmem=20G,h_fsize=100G
 #$ -pe local 4
-#$ -N all_samples
-#$ -o logs/all_samples.$TASK_ID.txt
-#$ -e logs/all_samples.$TASK_ID.txt
+#$ -N compute_corr
+#$ -o logs/01_compute_corr.$TASK_ID.txt
+#$ -e logs/01_compute_corr.$TASK_ID.txt
 #$ -m e
 #$ -t 1-10
 #$ -tc 10
@@ -26,7 +26,7 @@ module load conda_R/devel
 module list
 
 ## Edit with your job command
-Rscript all_samples.R
+Rscript 01_compute_corr.R
 echo "**** Job ends ****"
 date
 
