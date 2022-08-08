@@ -13,7 +13,6 @@ library(here)
 library(sessioninfo)
 library(dplyr)
 library(ggplot2)
-library(ggExtra)
 library(patchwork)
 
 
