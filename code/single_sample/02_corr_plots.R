@@ -49,7 +49,6 @@ print("sample id names listed")
 
 #### get task id and subset spe ####
 s = as.numeric(Sys.getenv("SGE_TASK_ID"))
-print(s)
 ix <- colData(spe_postqc)$sample_id_short == sample_ids[s]
 spe_sub <- spe_postqc[, ix]
 

@@ -26,7 +26,7 @@ module load conda_R/devel
 module list
 
 ## Edit with your job command
-Rscript corr_plots.R
+Rscript 02_corr_plots.R
 
 echo "**** Job ends ****"
 date
