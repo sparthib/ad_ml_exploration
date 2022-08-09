@@ -1,12 +1,12 @@
 # #library(sgejobs)
-sgejobs::job_single('non_zero_filtered_genes_NAbeta',
-                    create_shell = TRUE,
-                    create_logdir = TRUE, task_num = 10,
-                    queue = "bluejay",
-                    cores = 5L,
-                    command = "Rscript 04a_non_zero_filtered_genes_NAbeta.R",
-                    memory = "20G")
-
+# sgejobs::job_single('non_zero_filtered_genes_NAbeta',
+#                     create_shell = TRUE,
+#                     create_logdir = TRUE, task_num = 10,
+#                     queue = "bluejay",
+#                     cores = 5L,
+#                     command = "Rscript 04a_non_zero_filtered_genes_NAbeta.R",
+#                     memory = "20G")
+#
 
 library(SpatialExperiment)
 library(here)
