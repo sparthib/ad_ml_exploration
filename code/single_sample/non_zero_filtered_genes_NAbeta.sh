@@ -26,7 +26,7 @@ module load conda_R/devel
 module list
 
 ## Edit with your job command
-Rscript 04a_non_zero_filtered_genes_NAbeta.R
+Rscript 04e_non_zero_filtered_genes_NAbeta.R
 
 echo "**** Job ends ****"
 date
