@@ -52,9 +52,6 @@ dim(spe)
 
 spe<- scuttle::logNormCounts(spe)
 
-
-
-
 ####PpTau spearman#######
 
 PpTau <- as.matrix(colData(spe)$PpTau)
@@ -79,10 +76,10 @@ for( s in seq_len(nrow(logcounts(spe)))){
 names(res_list) <- rownames(logcounts(spe))
 
 
-
 output_dir <- here("corr_outputs",
-                   sample_ids[s])
-saveRDS(res_list, paste0(output_dir, "/filtered_non_zero_PpTau.RDS"))
+                   sample_ids[s],
+                   "filtered_non_zero_PpTau.RDS")
+saveRDS(res_list, output_dir)
 
 
 non_zero_genes <- c()
@@ -148,8 +145,6 @@ non_zero_groups <- non_zero_PpTau_df  |>
 # arrange(dep_delay, .by_group = TRUE)
 
 tail(non_zero_groups, n = 15)$gene_id
-
-
 
 
 output_dir <- here("plots","02_sample_subset", sample_ids[s])
