@@ -13,8 +13,6 @@ library(here)
 library(sessioninfo)
 library(dplyr)
 library(ggplot2)
-library(patchwork)
-
 
 sample_ids <- c(
     "S1_A1_Br3874" ,
@@ -29,7 +27,8 @@ sample_ids <- c(
     "S3_D1_Br3880"
 )
 
-s = as.numeric(Sys.getenv("SGE_TASK_ID"))
+#s = as.numeric(Sys.getenv("SGE_TASK_ID"))
+s = 2
 print(sample_ids[s])
 
 
