@@ -1,19 +1,60 @@
 library(spatialLIBD)
 library(patchwork)
-install.packages("gridGraphics")
-library(gridGraphics)
+library(ggplot2)
+library(dplyr)
+library(here)
+library(scuttle)
+library(nnSVG)
+#install.packages("gridGraphics")
+#library(gridGraphics)
+install.packages("nnet")
+library("nnet")
 
 
 ################
 
-top_15_genes_PAbeta<- c("MYL9",  "CNN1", "TPM1", "CAVIN1", "CALD1", "MYH11",
-                        "THBS1" , "ACTA2" , "PPP1R12B", "FN1", "TAGLN", "MGP",
-                        "ACTC1" ,  "FLNA",  "TPM2")
-top_15_genes_PpTau <- c("ARHGEF7" , "IL6ST",    "ADCY2" ,   "UNC13A",   "GDA" ,
-                        "CCDC91" ,  "SERPINE1", "IK",   "CNN1",
-                        "PRELP" ,   "NEXN" ,    "MGP" ,     "CARNS1",  "MYH11")
+sample_ids <- c(
+    "S1_A1_Br3874" ,
+    "S1_B1_Br3854",
+    "S1_C1_Br3873" ,
+    "S1_D1_Br3880" ,
+    "S2_A1_Br3874" ,
+    "S2_B1_Br3854",
+    "S2_C1_Br3873",
+    "S2_D1_Br3880",
+    "S3_A1_Br3874" ,
+    "S3_D1_Br3880"
+)
 
-intersect(top_15_genes_PAbeta, top_15_genes_PpTau)
+#s = as.numeric(Sys.getenv("SGE_TASK_ID"))
+s = 2
+print(sample_ids[s])
+
+
+
+spe <-readRDS(here::here("input_data",
+                         paste0("spe_wholegenome_postqc.rds")))
+
+
+
+ix <- colData(spe)$sample_id_short == sample_ids[s]
+spe<- spe[, ix]
+
+rownames(spe) <- rowData(spe)$gene_name
+spe <- nnSVG::filter_genes(spe,filter_genes_ncounts = 3,
+                           filter_mito = FALSE)
+
+spe<- scuttle::logNormCounts(spe)
+
+
+###########
+
+top_genes_NAbeta<- c("PHACTR1", "IL6ST", "DNAJB61", "SST")
+# top_15_genes_PpTau <- c("ARHGEF7" , "IL6ST",    "ADCY2" ,   "UNC13A",   "GDA" ,
+#                         "CCDC91" ,  "SERPINE1", "IK",   "CNN1",
+#                         "PRELP" ,   "NEXN" ,    "MGP" ,     "CARNS1",  "MYH11")
+#
+# intersect(top_15_genes_PAbeta, top_15_genes_PpTau)
 # "CNN1"  "MYH11" "MGP"
 
 ad_related_genes <- c("CLU", "MEF2C", "SORL1", "BIN1", "APOE")
@@ -23,38 +64,36 @@ ad_related_genes <- c("CLU", "MEF2C", "SORL1", "BIN1", "APOE")
 
 ###### spe with rowname = gene name and logcounts available ####
 
-ix_known <- which(rowData(spe)$gene_name %in% top_15_genes_PAbeta)
+ix_known <- which(rowData(spe)$gene_name %in% top_genes_NAbeta)
 
 spe_sub <- spe[ix_known, ]
 
+
 predictor_vars <- t(as.matrix(logcounts(spe_sub)))
-target_var <- as.matrix(colData(spe_sub)$PAbeta)
+target_var <- as.matrix(colData(spe_sub)$NAbeta)
 
 df <- cbind(predictor_vars, target_var)
-colnames(df) <- c(colnames(df)[1:15], "PAbeta")
+
+colnames(df) <- c("SST",  "IL6ST", "PHACTR1", "NAbeta")
 
 df <- as.data.frame(df)
 df <- df[rowSums(df[])>0,]
-# nrow(df)
+nrow(df) #[1] 1790
 # [1] 2004
-df <- df |> dplyr::filter(PAbeta > 0)
+df <- df |> dplyr::filter(NAbeta > 0)
 nrow(df)
-#763
+#327
 
-df <-df |> dplyr::mutate(binary_pabeta = case_when(
-    PAbeta <= 0.2 ~ 0,
-    PAbeta > 0.2 ~ 1
-) )
-
-####Linear regression
+#### Multinom  Regression ####
 
 models_summary <- list()
 models_res <- list()
 models_fitted <- list()
 
-for (i in seq_len(length(top_15_genes_PAbeta))){
 
-    model_lr = lm(as.formula(paste0("PAbeta ~", top_15_genes_PAbeta[i])), data = df)
+for (i in seq_len(3)){
+
+    model_lr = nnet::multinom(as.formula(paste0("NAbeta ~", colnames(df)[i])), data = df)
     models_summary[[i]] <- summary(model_lr)
     models_res[[i]] <- resid(model_lr)
     models_fitted[[i]] <- fitted(model_lr)
@@ -62,40 +101,47 @@ for (i in seq_len(length(top_15_genes_PAbeta))){
 
 }
 
-names(models_summary) <- top_15_genes_PAbeta
-names(models_res) <- top_15_genes_PAbeta
-names(models_fitted) <- top_15_genes_PAbeta
+model <- nnet::multinom(as.formula( "NAbeta ~ SST + IL6ST + PHACTR1"), data = df)
+fitted(model)
+summary(model)
+
+names(models_summary) <- colnames(df)[1:3]
+names(models_res) <- colnames(df)[1:3]
+names(models_fitted) <- colnames(df)[1:3]
 
 
 #####residual plots
-output_dir <- here("plots","02_sample_subset", sample_ids[3])
+output_dir <- here("plots","02_sample_subset", sample_ids[s])
 pdf(file = paste0(output_dir, "/", "PAbeta_Residual_plots_simple_lin_reg_top_corr_genes.pdf"))
 
-for(i in seq_len(length(top_15_genes_PAbeta))){
+gene_names <- c("SST", "IL6ST", "PHACTR1")
+for(i in seq_len(3)){
     par(mar = c(4,4,4,4))
     p <- plot(models_fitted[[i]], models_res[[i]], font.axis=1, cex.axis=1,
               xlab = 'Fitted', ylab = 'Residual', main = paste0("Fitted vs Residual, ",
-                                                                top_15_genes_PAbeta[i]))
+                                                                gene_names))
 }
 dev.off()
+
 #####Rsq for all plots
 rsq <- list()
-for(i in seq_len(length(top_15_genes_PAbeta))){
+for(i in seq_len(3)){
     rsq[[i]] <- models_summary[[i]]$r.squared
 }
 
 
 #plot pathology and gene expression
-colData(spe_sub)$sample_name <- colData(spe_sub)$sample_id
+colData(spe_sub)$sample_name <- colData(spe_sub)$sample_id_short
 
-output_dir <- here("plots","02_sample_subset", sample_ids[3])
+output_dir <- here("plots","02_sample_subset", sample_ids[s])
 pdf(file = paste0(output_dir, "/", "spot_plots_gene_vs_abeta.pdf"),
     width = 10)
-for(i in seq_len(length(top_15_genes_PAbeta))){
-    p <- vis_gene(
-        spe_sub,
-        sampleid = "V10A27106_C1_Br3873",
-        geneid = top_15_genes_PAbeta[i],
+
+for(i in seq_len(gene_names[1:3])){
+    p <- spatialLIBD::vis_gene(
+        spe,
+        sampleid = sample_ids[s],
+        geneid = "SST",
         spatial = TRUE,
         assayname = "logcounts",
         minCount = 0,
@@ -103,11 +149,11 @@ for(i in seq_len(length(top_15_genes_PAbeta))){
         image_id = "lowres",
         alpha = 1,
         point_size = 1.25
-    ) +ggtitle(top_15_genes_PAbeta[i])
+    ) +ggtitle("SST")
 
     q <- vis_gene(
         spe_sub,
-        sampleid = "V10A27106_C1_Br3873",
+        sampleid = sample_ids[s],
         geneid = "PAbeta",
         spatial = TRUE,
         assayname = "logcounts",
@@ -129,13 +175,13 @@ ad_related_genes <- c("CLU", "MEF2C", "SORL1", "BIN1", "APOE")
 colData(spe)$sample_name <- colData(spe)$sample_id
 spe<- logNormCounts(spe)
 
-output_dir <- here("plots","02_sample_subset", sample_ids[3])
+output_dir <- here("plots","02_sample_subset", sample_ids[s])
 pdf(file = paste0(output_dir, "/", "spot_plots_ad_gene_vs_abeta.pdf"),
     width = 10)
-for(i in seq_len(length(ad_related_genes))){
+for(i in seq_len(length(top_15_genes_PAbeta))){
     p <- vis_gene(
         spe,
-        sampleid = "V10A27106_C1_Br3873",
+        sampleid = sample_ids[s],
         geneid = ad_related_genes[i],
         spatial = TRUE,
         assayname = "logcounts",
@@ -148,7 +194,7 @@ for(i in seq_len(length(ad_related_genes))){
 
     q <- vis_gene(
         spe,
-        sampleid = "V10A27106_C1_Br3873",
+        sampleid = sample_ids[s],
         geneid = "PAbeta",
         spatial = TRUE,
         assayname = "logcounts",
@@ -158,7 +204,6 @@ for(i in seq_len(length(ad_related_genes))){
         alpha = 1,
         point_size = 1.25
     )+ggtitle("PAbeta")
-    par(mar = c(4,4,4,4))
     print(p | q)
 }
 
@@ -174,8 +219,20 @@ ggplot(rsq_df , aes(x=factor(0), y=rsq)) + #+
               nudge_x = .5)
 
 
-
-
+output_dir <- here("plots","02_sample_subset", sample_ids[s])
+p <- spatialLIBD::vis_grid_gene(
+    spe,
+    geneid = "SST",
+    spatial = TRUE,
+    assayname = "logcounts",
+    minCount = 0,
+    image_id = "lowres",
+    alpha = 1,
+    viridis = TRUE,
+    point_size = 3,
+    pdf = paste0(output_dir, "/", "ad_gene_vs_Nabeta.pdf")
+    )
+dev.off()
 
 
 
